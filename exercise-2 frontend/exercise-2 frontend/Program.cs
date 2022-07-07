@@ -61,6 +61,7 @@ public static class Program
         .AddChoices(choices));
         return choice;
     }
+
     public static void ListRecipes(List<Recipe>recipes, Dictionary<Guid, string> categoriesNamesMap,bool showIndex) {
         var table = new Table();
         if(showIndex) table.AddColumn("index");
@@ -111,6 +112,21 @@ public static class Program
         }
         AnsiConsole.Write(table);
     }
+
+    public static void ListCategories(List<Category>categories,bool showIndex )
+    {
+        var table = new Table();
+        table.AddColumn(showIndex? "index":"ID");
+        table.AddColumn("Name");
+        int counter = 0;
+        foreach (Category c in categories)
+        {
+            table.AddRow(showIndex? counter.ToString(): c.ID.ToString(), c.Name);
+            counter++;
+        }
+        AnsiConsole.Write(table);
+    }
+
     public static async Task Main(string[] args)
     {
         AnsiConsole.Write(new FigletText("Mena Lateaf").Centered().Color(Color.Grey));
@@ -293,14 +309,7 @@ public static class Program
                             switch (backChoice)
                             {
                                 case "":
-                                    var table = new Table();
-                                    table.AddColumn("ID");
-                                    table.AddColumn("Name");
-                                    foreach (Category c in categories)
-                                    {
-                                        table.AddRow(c.ID.ToString(), c.Name);
-                                    }
-                                    AnsiConsole.Write(table);
+                                    ListCategories(categories,false);
                                     backChoice = "Back";
                                     break;
                                 case "Back":
