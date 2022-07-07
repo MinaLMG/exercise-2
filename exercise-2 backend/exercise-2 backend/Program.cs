@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
-
 var app = WebApplication.Create();
 Data data = new Data();
 Pages pages = new Pages(data);
@@ -16,15 +15,11 @@ public class Data
 {
     public List<Category> Categories { get; set; }
     public List<Recipe> Recipes { get; set; }
-
     public Dictionary<string, Guid> CategoriesMap { get; set; }
     public Dictionary<Guid, string> CategoriesNamesMap { get; set; }
-
     public string RecipesLoc { get; set; }
     public string CategoriesLoc { get; set; }
-
     public JsonSerializerOptions Options { get; set; }
-
 
     public void WriteInFolder(string text, string path)
     {
@@ -62,67 +57,75 @@ public class Data
     }
     public Category EditCategory(Guid id, Category newCategory)
     {
-        Category to_edit = this.Categories.Single(x => x.ID == id);
-        to_edit.Name = newCategory.Name;
+        Category toEdit = this.Categories.Single(x => x.ID == id);
+        toEdit.Name = newCategory.Name;
         this.WriteInFolder(JsonSerializer.Serialize(this.Categories, this.Options), this.CategoriesLoc);
-        return to_edit;
+        return toEdit;
     }
+
     public Recipe EditRecipe(Guid id, Recipe newRecipe)
     {
-
-        Recipe to_edit = this.Recipes.Single(x => x.ID == id);
-        to_edit.Title = newRecipe.Title;
-        to_edit.Instructions = newRecipe.Instructions;
-        to_edit.Ingredients = newRecipe.Ingredients;
-        to_edit.Categories = newRecipe.Categories;
+        Recipe toEdit = this.Recipes.Single(x => x.ID == id);
+        toEdit.Title = newRecipe.Title;
+        toEdit.Instructions = newRecipe.Instructions;
+        toEdit.Ingredients = newRecipe.Ingredients;
+        toEdit.Categories = newRecipe.Categories;
         this.WriteInFolder(JsonSerializer.Serialize(this.Recipes, this.Options), this.RecipesLoc);
-        return to_edit;
+        return toEdit;
     }
+
     public void AddRecipe(Recipe to_add)
     {
         this.Recipes.Add(to_add);
         this.WriteInFolder(JsonSerializer.Serialize(this.Recipes, this.Options), this.RecipesLoc);
     }
+
 }
 public class Pages
 {
-    public Data data { get; set; }
+    public Data Data { get; set; }
+    
     public IResult CreateCategory([FromBody] Category c)
     {
-        data.AddCategory(c);
+        this.Data.AddCategory(c);
         return Results.Json(new { c.Name, c.ID });
     }
+
     public IResult EditCategory(Guid id, [FromBody] Category c)
     {
         Console.WriteLine("here");
-        Category to_edit = data.EditCategory(id, c);
-        return Results.Json(to_edit);
+        Category toEdit = Data.EditCategory(id, c);
+        return Results.Json(toEdit);
     }
+
     public IResult EditRecipe(Guid id, [FromBody] Recipe r)
     {
         Console.WriteLine("here");
-        Recipe to_edit = data.EditRecipe(id, r);
-        return Results.Json(to_edit);
+        Recipe toEdit = Data.EditRecipe(id, r);
+        return Results.Json(toEdit);
     }
+
     public IResult CreateRecipe([FromBody] Recipe r)
     {
-        data.AddRecipe(r);
+        Data.AddRecipe(r);
         return Results.Json(new { r.Title, r.Ingredients, r.Instructions, r.Categories, r.ID });
     }
 
     public void CategoryPages(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/categories", () => Results.Json(data.Categories));
+        endpoints.MapGet("/categories", () => Results.Json(Data.Categories));
         endpoints.MapPost("/categories", CreateCategory);
         endpoints.MapPut("/categories/{id}", EditCategory);
     }
+
     public void RecipePages(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/recipes", () => Results.Json(data.Recipes));
+        endpoints.MapGet("/recipes", () => Results.Json(Data.Recipes));
         endpoints.MapPost("/recipes", CreateRecipe);
         endpoints.MapPut("/recipes/{id}", EditRecipe);
     }
-    public Pages(Data data) { this.data = data; }
+
+    public Pages(Data data) { this.Data = data; }
 }
 public class Category
 {

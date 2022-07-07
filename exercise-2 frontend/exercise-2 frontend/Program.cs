@@ -211,10 +211,10 @@ public static class Program
                                     {
                                         chosenCategoriesFinal.Add(categoriesMap[chosenCategories[i]]);
                                     }
-                                    Recipe to_add = new Recipe(title, ingredients, instructions, chosenCategoriesFinal);
-                                    var temp = JsonSerializer.Serialize(to_add);
+                                    Recipe toAdd = new Recipe(title, ingredients, instructions, chosenCategoriesFinal);
+                                    var temp = JsonSerializer.Serialize(toAdd);
                                     var res3 = await httpClient.PostAsync("https://localhost:7131/recipes", new StringContent(temp, Encoding.UTF8, "application/json"));
-                                    recipes.Add(to_add);
+                                    recipes.Add(toAdd);
                                     backChoice = "Back";
                                     break;
                                 case "Back":
@@ -236,7 +236,6 @@ public static class Program
                                     table.AddColumn("Instructions");
                                     table.AddColumn("categoties");
                                     int indexer = 0;
-
                                     foreach (Recipe r in recipes)
                                     {
                                         string categoriesTable = "";
@@ -248,7 +247,6 @@ public static class Program
                                             if (counter < r.Categories.Count)
                                                 categoriesTable += "\n";
                                         }
-                                        // Add some rows
                                         table.AddRow(new Markup(indexer.ToString()), new Markup(r.Title), new Markup(r.Ingredients), new Markup(r.Instructions), new Panel(categoriesTable));
                                         indexer++;
                                     }
@@ -338,7 +336,6 @@ public static class Program
                                         while (categoriesMap.ContainsKey(null))
                                         {
                                             name = AnsiConsole.Ask<string>("this category name already exists, Enter neew one please. ").ToLower().Trim();
-
                                         }
                                     }
                                     catch (Exception e) { }
