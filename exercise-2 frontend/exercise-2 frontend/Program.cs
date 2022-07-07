@@ -353,16 +353,7 @@ public static class Program
                             switch (backChoice)
                             {
                                 case "":
-                                    var table = new Table();
-                                    table.AddColumn("index");
-                                    table.AddColumn("Name");
-                                    int counter = 0;
-                                    foreach (Category c in categories)
-                                    {
-                                        table.AddRow(counter.ToString(), c.Name);
-                                        counter++;
-                                    }
-                                    AnsiConsole.Write(table);
+                                    ListCategories(categories, true);
                                     var index = -1;
                                     while (index < 0 || index >= categories.Count)
                                     {
