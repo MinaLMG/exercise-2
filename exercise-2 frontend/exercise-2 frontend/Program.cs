@@ -51,22 +51,6 @@ public static class Program
             this.Categories = categories;
             this.ID = Guid.NewGuid();
         }
-
-        public string Display(Dictionary<Guid, string> categoriesNamesMap)
-        {
-            string toDisplay = "this receipe is called :" + this.Title + ", to do it we need: " + this.Ingredients + ", the instructions are: " + this.Instructions;
-            for (int i = 0; i < this.Categories.Count; i++)
-            {
-                if (i == 0)
-                {
-                    toDisplay += ", for categories it is considered as: ";
-                }
-                if (i != 0) { toDisplay += "       "; }
-                toDisplay += categoriesNamesMap[this.Categories[i]];
-            }
-            toDisplay += "\n\n";
-            return toDisplay;
-        }
     }
 
     public static string Select(string[] choices, string title = "")
@@ -76,42 +60,6 @@ public static class Program
         .PageSize(10)
         .AddChoices(choices));
         return choice;
-    }
-
-    public static void WriteInFolder(string text, string path)
-    {
-        using (StreamWriter writer = new StreamWriter(path))
-        {
-            writer.WriteLine(text);
-        }
-    }
-
-    public static string ListCategories(List<Category> categories)
-    {
-        string categoriesString = "";
-        for (int i = 0; i < categories.Count; i++)
-        {
-            categoriesString += "at index ";
-            categoriesString += i;
-            categoriesString += " ";
-            categoriesString += categories[i].Display();
-            categoriesString += "\n\n";
-        }
-        return categoriesString;
-    }
-
-    public static string ListRecipes(List<Recipe> receipes, Dictionary<Guid, string> categoriesNamesMap)
-    {
-        string receipesString = "";
-        for (int i = 0; i < receipes.Count; i++)
-        {
-            receipesString += "at index ";
-            receipesString += i;
-            receipesString += " ";
-            receipesString += receipes[i].Display(categoriesNamesMap);
-            receipesString += "\n\n";
-        }
-        return receipesString;
     }
 
     public static async Task Main(string[] args)

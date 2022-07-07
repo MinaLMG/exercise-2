@@ -13,8 +13,8 @@ app.Run();
 
 public class Data
 {
-    public List<Category> Categories { get; set; }
-    public List<Recipe> Recipes { get; set; }
+    public List<Category> Categories { get; set; } = new();
+    public List<Recipe> Recipes { get; set; } = new();
     public Dictionary<string, Guid> CategoriesMap { get; set; }
     public Dictionary<Guid, string> CategoriesNamesMap { get; set; }
     public string RecipesLoc { get; set; }
@@ -137,7 +137,7 @@ public class Recipe
     public string Title { get; set; }
     public string Ingredients { get; set; }
     public string Instructions { get; set; }
-    public List<Guid> Categories { get; set; }
+    public List<Guid> Categories { get; set; } = new();
     public Guid ID { get; set; }
 
 }
