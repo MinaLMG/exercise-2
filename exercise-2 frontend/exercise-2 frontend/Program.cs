@@ -127,6 +127,44 @@ public static class Program
         AnsiConsole.Write(table);
     }
 
+    public static Recipe getRecipeInput(List< Category> categories, Dictionary<string, Guid> categoriesMap,bool isEditing) {
+        var title = AnsiConsole.Ask<string>(isEditing? "what's the recipe new title?": "What's the recipe title?");
+        List<string> ingredients = new();
+        var ingredient = "";
+        ingredient = AnsiConsole.Ask<string>("What's the recipe ingredients?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
+        while (ingredient != "END")
+        {
+            ingredients.Add(ingredient);
+            ingredient = AnsiConsole.Ask<string>("[green]enter another ingredient (type END to get to the next step)[/]").Trim();
+        }
+        List<string> instructions = new();
+        var instruction = "";
+        instruction = AnsiConsole.Ask<string>("What's the recipe instructions?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
+        while (instruction != "END")
+        {
+            instructions.Add(instruction);
+            instruction = AnsiConsole.Ask<string>(" [green]enter another instruction (type END to get to the next step)[/]").Trim();
+        }
+        var categoryNames = categories.Select(x => x.Name).ToArray();
+        var chosenCategories = AnsiConsole.Prompt(
+             new MultiSelectionPrompt<string>()
+                 .Title("What are your [green]the recipe categories[/]?")
+                 .NotRequired()
+                 .PageSize(10)
+                 .InstructionsText(
+                     "[grey](Press [blue]<space>[/] to toggle a category, " +
+                     "[green]<enter>[/] to accept)[/]")
+                 .AddChoices(categoryNames));
+        List<Guid> chosenCategoriesFinal = new List<Guid> { };
+        for (int i = 0; i < chosenCategories.Count; i++)
+        {
+            chosenCategoriesFinal.Add(categoriesMap[chosenCategories[i]]);
+        }
+        Recipe recipe = new Recipe(title, ingredients, instructions, chosenCategoriesFinal);
+        return recipe; 
+
+    }
+
     public static async Task Main(string[] args)
     {
         AnsiConsole.Write(new FigletText("Mena Lateaf").Centered().Color(Color.Grey));
@@ -187,39 +225,7 @@ public static class Program
                             switch (backChoice)
                             {
                                 case "":
-                                    var title = AnsiConsole.Ask<string>("What's the recipe title?");
-                                    List<string> ingredients = new();
-                                    var ingredient = "";
-                                    ingredient = AnsiConsole.Ask<string>("What's the recipe ingredients?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
-                                    while (ingredient != "END")
-                                    {
-                                        ingredients.Add(ingredient);
-                                        ingredient = AnsiConsole.Ask<string>("[green]enter another ingredient (type END to get to the next step)[/]").Trim();
-                                    }
-                                    List<string> instructions = new();
-                                    var instruction = "";
-                                    instruction = AnsiConsole.Ask<string>("What's the recipe instructions?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
-                                    while (instruction != "END")
-                                    {
-                                        instructions.Add(instruction);
-                                        instruction = AnsiConsole.Ask<string>(" [green]enter another instruction (type END to get to the next step)[/]").Trim();
-                                    }
-                                    var categoryNames = categories.Select(x => x.Name).ToArray();
-                                    var chosenCategories = AnsiConsole.Prompt(
-                                         new MultiSelectionPrompt<string>()
-                                             .Title("What are your [green]the recipe categories[/]?")
-                                             .NotRequired()
-                                             .PageSize(10)
-                                             .InstructionsText(
-                                                 "[grey](Press [blue]<space>[/] to toggle a category, " +
-                                                 "[green]<enter>[/] to accept)[/]")
-                                             .AddChoices(categoryNames));
-                                    List<Guid> chosenCategoriesFinal = new List<Guid> { };
-                                    for (int i = 0; i < chosenCategories.Count; i++)
-                                    {
-                                        chosenCategoriesFinal.Add(categoriesMap[chosenCategories[i]]);
-                                    }
-                                    Recipe toAdd = new Recipe(title, ingredients, instructions, chosenCategoriesFinal);
+                                    Recipe toAdd = getRecipeInput(categories, categoriesMap,false);
                                     var temp = JsonSerializer.Serialize(toAdd);
                                     var res3 = await httpClient.PostAsync("https://localhost:7131/recipes", new StringContent(temp, Encoding.UTF8, "application/json"));
                                     recipes.Add(toAdd);
@@ -243,39 +249,7 @@ public static class Program
                                     {
                                         index = int.Parse(AnsiConsole.Ask<string>("choose an index to edit"));
                                     }
-                                    var title = AnsiConsole.Ask<string>("What's the recipe new title?");
-                                    List<string> ingredients = new();
-                                    var ingredient = "";
-                                    ingredient = AnsiConsole.Ask<string>("What's the recipe ingredients?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
-                                    while (ingredient != "END")
-                                    {
-                                        ingredients.Add(ingredient);
-                                        ingredient = AnsiConsole.Ask<string>("[green]enter another ingredient (type END to get to the next step)[/]").Trim();
-                                    }
-                                    List<string> instructions = new();
-                                    var instruction = "";
-                                    instruction = AnsiConsole.Ask<string>("What's the recipe instructions?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
-                                    while (instruction != "END")
-                                    {
-                                        instructions.Add(instruction);
-                                        instruction = AnsiConsole.Ask<string>(" [green]enter another instruction (type END to get to the next step)[/]").Trim();
-                                    }
-                                    var categoryNames = categories.Select(x => x.Name).ToArray();
-                                    var chosenCategories = AnsiConsole.Prompt(
-                                        new MultiSelectionPrompt<string>()
-                                            .Title("What are your [green]the recipe categories[/]?")
-                                            .NotRequired()
-                                            .PageSize(10)
-                                            .InstructionsText(
-                                                "[grey](Press [blue]<space>[/] to toggle a category, " +
-                                                "[green]<enter>[/] to accept)[/]")
-                                            .AddChoices(categoryNames));
-                                    List<Guid> chosenCategoriesFinal = new List<Guid> { };
-                                    for (int i = 0; i < chosenCategories.Count; i++)
-                                    {
-                                        chosenCategoriesFinal.Add(categoriesMap[chosenCategories[i]]);
-                                    }
-                                    Recipe toEdit = new Recipe(title, ingredients, instructions, chosenCategoriesFinal);
+                                    Recipe toEdit = getRecipeInput(categories,categoriesMap,true);
                                     var temp = JsonSerializer.Serialize(toEdit);
                                     var res3 = await httpClient.PutAsync("https://localhost:7131/recipes/" + recipes[index].ID, new StringContent(temp, Encoding.UTF8, "application/json"));
                                     var inBetween3 = res3.Content.ReadAsStringAsync().Result;
