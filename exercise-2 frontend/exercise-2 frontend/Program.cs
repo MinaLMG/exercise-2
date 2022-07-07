@@ -33,9 +33,9 @@ public static class Program
     public class Recipe
     {
         public string Title { get; set; }
-        public string Ingredients { get; set; }
-        public string Instructions { get; set; }
-        public List<Guid> Categories { get; set; }
+        public List<string> Ingredients { get; set; } = new();
+        public List<string> Instructions { get; set; } = new();
+        public List<Guid> Categories { get; set; } = new();
         public Guid ID { get; set; }
 
         public Recipe()
@@ -43,7 +43,7 @@ public static class Program
 
         }
 
-        public Recipe(string title, string ingredients, string instructions, List<Guid> categories)
+        public Recipe(string title, List<string> ingredients, List<string> instructions, List<Guid> categories)
         {
             this.Title = title;
             this.Ingredients = ingredients;
@@ -86,7 +86,7 @@ public static class Program
             categoriesNamesMap[categories[i].ID] = categories[i].Name;
         }
         var res2 = await httpClient.GetAsync("https://localhost:7131/recipes");
-        
+
         var inBetween2 = res2.Content.ReadAsStringAsync().Result;
         var recipes = JsonSerializer.Deserialize<List<Recipe>>(inBetween2, serializeOptions);
         bool continueCode = true;
@@ -123,8 +123,31 @@ public static class Program
                                             if (counter < r.Categories.Count)
                                                 categoriesTable += "\n";
                                         }
-                                        // Add some rows
-                                        table.AddRow(new Markup(r.Title), new Markup(r.Ingredients), new Markup(r.Instructions), new Panel(categoriesTable));
+                                        string ingredients = "";
+                                        int iCounter = 0;
+                                        foreach (string ingredient in r.Ingredients)
+                                        {
+                                            iCounter++;
+                                            ingredients += "-";
+                                            ingredients += ingredient;
+                                            if (iCounter != r.Ingredients.Count)
+                                            {
+                                                ingredients += "\n";
+                                            }
+                                        }
+                                        string instructions = "";
+                                        iCounter = 0;
+                                        foreach (string instruction in r.Instructions)
+                                        {
+                                            iCounter++;
+                                            instructions += "-";
+                                            instructions += instruction;
+                                            if (iCounter != r.Instructions.Count)
+                                            {
+                                                instructions += "\n";
+                                            }
+                                        }
+                                        table.AddRow(new Markup(r.Title), new Markup(ingredients), new Markup(instructions), new Panel(categoriesTable));
                                     }
                                     AnsiConsole.Write(table);
                                     backChoice = Select(new[] { "Back" });
@@ -142,8 +165,22 @@ public static class Program
                             {
                                 case "":
                                     var title = AnsiConsole.Ask<string>("What's the recipe title?");
-                                    var ingredients = AnsiConsole.Ask<string>("What's the recipe ingredients?");
-                                    var instructions = AnsiConsole.Ask<string>("What's the recipe instructions?");
+                                    List<string> ingredients = new();
+                                    var ingredient = "";
+                                    ingredient = AnsiConsole.Ask<string>("What's the recipe ingredients?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
+                                    while (ingredient != "END")
+                                    {
+                                        ingredients.Add(ingredient);
+                                        ingredient = AnsiConsole.Ask<string>("[green]enter another ingredient (type END to get to the next step)[/]").Trim();
+                                    }
+                                    List<string> instructions = new();
+                                    var instruction = "";
+                                    instruction = AnsiConsole.Ask<string>("What's the recipe instructions?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
+                                    while (instruction != "END")
+                                    {
+                                        instructions.Add(instruction);
+                                        instruction = AnsiConsole.Ask<string>(" [green]enter another instruction (type END to get to the next step)[/]").Trim();
+                                    }
                                     var categoryNames = categories.Select(x => x.Name).ToArray();
                                     var chosenCategories = AnsiConsole.Prompt(
                                          new MultiSelectionPrompt<string>()
@@ -195,7 +232,32 @@ public static class Program
                                             if (counter < r.Categories.Count)
                                                 categoriesTable += "\n";
                                         }
-                                        table.AddRow(new Markup(indexer.ToString()), new Markup(r.Title), new Markup(r.Ingredients), new Markup(r.Instructions), new Panel(categoriesTable));
+                                        string ingredientsToShow = "";
+                                        int iCounter = 0;
+                                        foreach (string ingredientToShow in r.Ingredients)
+                                        {
+                                            iCounter++;
+                                            ingredientsToShow += "-";
+                                            ingredientsToShow += ingredientToShow;
+                                            if (iCounter != r.Ingredients.Count)
+                                            {
+                                                ingredientsToShow += "\n";
+                                            }
+                                        }
+                                        string instructionsToShow = "";
+                                        iCounter = 0;
+                                        foreach (string instructionToShow in r.Instructions)
+                                        {
+                                            iCounter++;
+                                            instructionsToShow += "-";
+                                            instructionsToShow += instructionToShow;
+                                            if (iCounter != r.Instructions.Count)
+                                            {
+                                                instructionsToShow += "\n";
+                                            }
+                                        }
+                                        table.AddRow(new Markup(indexer.ToString()), new Markup(r.Title), new Markup(ingredientsToShow), new Markup(instructionsToShow), new Panel(categoriesTable));
+
                                         indexer++;
                                     }
                                     AnsiConsole.Write(table);
@@ -205,8 +267,22 @@ public static class Program
                                         index = int.Parse(AnsiConsole.Ask<string>("choose an index to edit"));
                                     }
                                     var title = AnsiConsole.Ask<string>("What's the recipe new title?");
-                                    var ingredients = AnsiConsole.Ask<string>("What's the recipe new ingredients?");
-                                    var instructions = AnsiConsole.Ask<string>("What's the recipe new instructions?");
+                                    List<string> ingredients = new();
+                                    var ingredient = "";
+                                    ingredient = AnsiConsole.Ask<string>("What's the recipe ingredients?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
+                                    while (ingredient != "END")
+                                    {
+                                        ingredients.Add(ingredient);
+                                        ingredient = AnsiConsole.Ask<string>("[green]enter another ingredient (type END to get to the next step)[/]").Trim();
+                                    }
+                                    List<string> instructions = new();
+                                    var instruction = "";
+                                    instruction = AnsiConsole.Ask<string>("What's the recipe instructions?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
+                                    while (instruction != "END")
+                                    {
+                                        instructions.Add(instruction);
+                                        instruction = AnsiConsole.Ask<string>(" [green]enter another instruction (type END to get to the next step)[/]").Trim();
+                                    }
                                     var categoryNames = categories.Select(x => x.Name).ToArray();
                                     var chosenCategories = AnsiConsole.Prompt(
                                         new MultiSelectionPrompt<string>()
@@ -264,7 +340,7 @@ public static class Program
                                         table.AddRow(c.ID.ToString(), c.Name);
                                     }
                                     AnsiConsole.Write(table);
-                                    backChoice =  "Back" ;
+                                    backChoice = "Back";
                                     break;
                                 case "Back":
                                     backChoice = "";

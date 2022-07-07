@@ -84,7 +84,7 @@ public class Data
 public class Pages
 {
     public Data Data { get; set; }
-    
+
     public IResult CreateCategory([FromBody] Category c)
     {
         this.Data.AddCategory(c);
@@ -135,8 +135,8 @@ public class Category
 public class Recipe
 {
     public string Title { get; set; }
-    public string Ingredients { get; set; }
-    public string Instructions { get; set; }
+    public List<string> Ingredients { get; set; } = new();
+    public List<string> Instructions { get; set; } = new();
     public List<Guid> Categories { get; set; } = new();
     public Guid ID { get; set; }
 
