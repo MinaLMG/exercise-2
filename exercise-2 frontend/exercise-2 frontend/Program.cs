@@ -61,7 +61,56 @@ public static class Program
         .AddChoices(choices));
         return choice;
     }
+    public static void ListRecipes(List<Recipe>recipes, Dictionary<Guid, string> categoriesNamesMap,bool showIndex) {
+        var table = new Table();
+        if(showIndex) table.AddColumn("index");
+        table.AddColumn("Title");
+        table.AddColumn("Ingredients");
+        table.AddColumn("Instructions");
+        table.AddColumn("categoties");
+        int indexer = 0;
 
+        foreach (Recipe r in recipes)
+        {
+            string categoriesTable = "";
+            int counter = 0;
+            foreach (Guid g in r.Categories)
+            {
+                counter++;
+                categoriesTable += categoriesNamesMap[g];
+                if (counter < r.Categories.Count)
+                    categoriesTable += "\n";
+            }
+            string ingredients = "";
+            int iCounter = 0;
+            foreach (string ingredient in r.Ingredients)
+            {
+                iCounter++;
+                ingredients += "-";
+                ingredients += ingredient;
+                if (iCounter != r.Ingredients.Count)
+                {
+                    ingredients += "\n";
+                }
+            }
+            string instructions = "";
+            iCounter = 0;
+            foreach (string instruction in r.Instructions)
+            {
+                iCounter++;
+                instructions += "-";
+                instructions += instruction;
+                if (iCounter != r.Instructions.Count)
+                {
+                    instructions += "\n";
+                }
+            }
+            if(!showIndex) table.AddRow(new Markup(r.Title), new Markup(ingredients), new Markup(instructions), new Panel(categoriesTable));
+            else table.AddRow(new Markup(indexer.ToString()), new Markup(r.Title), new Markup(ingredients), new Markup(instructions), new Panel(categoriesTable));
+            indexer++;
+        }
+        AnsiConsole.Write(table);
+    }
     public static async Task Main(string[] args)
     {
         AnsiConsole.Write(new FigletText("Mena Lateaf").Centered().Color(Color.Grey));
@@ -107,49 +156,7 @@ public static class Program
                             switch (backChoice)
                             {
                                 case "":
-                                    var table = new Table();
-                                    table.AddColumn("Title");
-                                    table.AddColumn("Ingredients");
-                                    table.AddColumn("Instructions");
-                                    table.AddColumn("categoties");
-                                    foreach (Recipe r in recipes)
-                                    {
-                                        string categoriesTable = "";
-                                        int counter = 0;
-                                        foreach (Guid g in r.Categories)
-                                        {
-                                            counter++;
-                                            categoriesTable += categoriesNamesMap[g];
-                                            if (counter < r.Categories.Count)
-                                                categoriesTable += "\n";
-                                        }
-                                        string ingredients = "";
-                                        int iCounter = 0;
-                                        foreach (string ingredient in r.Ingredients)
-                                        {
-                                            iCounter++;
-                                            ingredients += "-";
-                                            ingredients += ingredient;
-                                            if (iCounter != r.Ingredients.Count)
-                                            {
-                                                ingredients += "\n";
-                                            }
-                                        }
-                                        string instructions = "";
-                                        iCounter = 0;
-                                        foreach (string instruction in r.Instructions)
-                                        {
-                                            iCounter++;
-                                            instructions += "-";
-                                            instructions += instruction;
-                                            if (iCounter != r.Instructions.Count)
-                                            {
-                                                instructions += "\n";
-                                            }
-                                        }
-                                        table.AddRow(new Markup(r.Title), new Markup(ingredients), new Markup(instructions), new Panel(categoriesTable));
-                                    }
-                                    AnsiConsole.Write(table);
+                                    ListRecipes(recipes, categoriesNamesMap,false);
                                     backChoice = Select(new[] { "Back" });
                                     break;
                                 case "Back":
@@ -214,53 +221,7 @@ public static class Program
                             switch (backChoice)
                             {
                                 case "":
-                                    var table = new Table();
-                                    table.AddColumn("index");
-                                    table.AddColumn("Title");
-                                    table.AddColumn("Ingredients");
-                                    table.AddColumn("Instructions");
-                                    table.AddColumn("categoties");
-                                    int indexer = 0;
-                                    foreach (Recipe r in recipes)
-                                    {
-                                        string categoriesTable = "";
-                                        int counter = 0;
-                                        foreach (Guid g in r.Categories)
-                                        {
-                                            counter++;
-                                            categoriesTable += categoriesNamesMap[g];
-                                            if (counter < r.Categories.Count)
-                                                categoriesTable += "\n";
-                                        }
-                                        string ingredientsToShow = "";
-                                        int iCounter = 0;
-                                        foreach (string ingredientToShow in r.Ingredients)
-                                        {
-                                            iCounter++;
-                                            ingredientsToShow += "-";
-                                            ingredientsToShow += ingredientToShow;
-                                            if (iCounter != r.Ingredients.Count)
-                                            {
-                                                ingredientsToShow += "\n";
-                                            }
-                                        }
-                                        string instructionsToShow = "";
-                                        iCounter = 0;
-                                        foreach (string instructionToShow in r.Instructions)
-                                        {
-                                            iCounter++;
-                                            instructionsToShow += "-";
-                                            instructionsToShow += instructionToShow;
-                                            if (iCounter != r.Instructions.Count)
-                                            {
-                                                instructionsToShow += "\n";
-                                            }
-                                        }
-                                        table.AddRow(new Markup(indexer.ToString()), new Markup(r.Title), new Markup(ingredientsToShow), new Markup(instructionsToShow), new Panel(categoriesTable));
-
-                                        indexer++;
-                                    }
-                                    AnsiConsole.Write(table);
+                                    ListRecipes(recipes, categoriesNamesMap, true);
                                     var index = -1;
                                     while (index < 0 || index >= recipes.Count)
                                     {
