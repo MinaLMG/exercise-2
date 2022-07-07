@@ -23,11 +23,6 @@ public static class Program
             this.Name = x;
             this.ID = Guid.NewGuid(); ;
         }
-
-        public string Display()
-        {
-            return "this category has a name : " + this.Name;
-        }
     }
 
     public class Recipe
@@ -127,22 +122,22 @@ public static class Program
     }
 
     public static Recipe getRecipeInput(List< Category> categories, Dictionary<string, Guid> categoriesMap,bool isEditing) {
-        var title = AnsiConsole.Ask<string>(isEditing? "what's the recipe new title?": "What's the recipe title?").Trim();
+        var title = AnsiConsole.Ask<string>(isEditing? "[aquamarine1_1]what's the recipe new title?[/]" : "[aquamarine1_1]What's the recipe title?[/]").Trim();
         List<string> ingredients = new();
         var ingredient = "";
-        ingredient = AnsiConsole.Ask<string>("What's the recipe ingredients?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
+        ingredient = AnsiConsole.Ask<string>("[aquamarine1_1]What's the recipe ingredients?[/]\n[mediumorchid]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
         while (ingredient != "END")
         {
             ingredients.Add(ingredient);
-            ingredient = AnsiConsole.Ask<string>("[green]enter another ingredient (type END to get to the next step)[/]").Trim();
+            ingredient = AnsiConsole.Ask<string>("[mediumorchid]enter another ingredient (type END to get to the next step)[/]").Trim();
         }
         List<string> instructions = new();
         var instruction = "";
-        instruction = AnsiConsole.Ask<string>("What's the recipe instructions?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
+        instruction = AnsiConsole.Ask<string>("[aquamarine1_1]What's the recipe instructions?[/]\n[mediumorchid]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
         while (instruction != "END")
         {
             instructions.Add(instruction);
-            instruction = AnsiConsole.Ask<string>(" [green]enter another instruction (type END to get to the next step)[/]").Trim();
+            instruction = AnsiConsole.Ask<string>(" [mediumorchid]enter another instruction (type END to get to the next step)[/]").Trim();
         }
         var categoryNames = categories.Select(x => x.Name).ToArray();
         var chosenCategories = AnsiConsole.Prompt(
@@ -165,12 +160,12 @@ public static class Program
 
     public static Category getCategoryInput(Dictionary<string, Guid> categoriesMap,bool isEditing)
     {
-        var name = AnsiConsole.Ask<string>(isEditing ? "What's the category new name?" : "What's the category name?").ToLower().Trim();
+        var name = AnsiConsole.Ask<string>(isEditing ? "[aquamarine1_1]What's the category new name?[/]" : "[aquamarine1_1]What's the category name?[/]").ToLower().Trim();
         try
         {
-            while (categoriesMap.ContainsKey(null))
+            while (categoriesMap.ContainsKey(name))
             {
-                name = AnsiConsole.Ask<string>("this category name already exists, Enter neew one please. ").ToLower().Trim();
+                name = AnsiConsole.Ask<string>("[red]this category name already exists[/],[mediumorchid] Enter neew one please.[/] ").ToLower().Trim();
             }
         }
         catch (Exception e) { }
@@ -257,9 +252,10 @@ public static class Program
                                 case "":
                                     ListRecipes(recipes, categoriesNamesMap, true);
                                     var index = -1;
+                                    index = int.Parse(AnsiConsole.Ask<string>("[green]Choose an index to edit[/]"));
                                     while (index < 0 || index >= recipes.Count)
                                     {
-                                        index = int.Parse(AnsiConsole.Ask<string>("choose an index to edit"));
+                                        index = int.Parse(AnsiConsole.Ask<string>("[red]Not a valid index[/], [green]please choose a valid one[/]"));
                                     }
                                     Recipe toEdit = getRecipeInput(categories,categoriesMap,true);
                                     var temp = JsonSerializer.Serialize(toEdit);
@@ -332,9 +328,10 @@ public static class Program
                                 case "":
                                     ListCategories(categories, true);
                                     var index = -1;
+                                    index = int.Parse(AnsiConsole.Ask<string>("[green]Choose an index to edit[/]"));
                                     while (index < 0 || index >= categories.Count)
                                     {
-                                        index = int.Parse(AnsiConsole.Ask<string>("choose an index to edit"));
+                                        index = int.Parse(AnsiConsole.Ask<string>("[red]Not a valid index[/], [green]please choose a valid one[/]"));
                                     }
                                     categoriesMap.Remove(categories[index].Name);
                                    Category toEdit=getCategoryInput(categoriesMap, true);
