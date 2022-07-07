@@ -70,7 +70,6 @@ public static class Program
         table.AddColumn("Instructions");
         table.AddColumn("categoties");
         int indexer = 0;
-
         foreach (Recipe r in recipes)
         {
             string categoriesTable = "";
@@ -162,7 +161,6 @@ public static class Program
         }
         Recipe recipe = new Recipe(title, ingredients, instructions, chosenCategoriesFinal);
         return recipe; 
-
     }
 
     public static Category getCategoryInput(Dictionary<string, Guid> categoriesMap,bool isEditing)
@@ -204,7 +202,6 @@ public static class Program
             categoriesNamesMap[categories[i].ID] = categories[i].Name;
         }
         var res2 = await httpClient.GetAsync("https://localhost:7131/recipes");
-
         var inBetween2 = res2.Content.ReadAsStringAsync().Result;
         var recipes = JsonSerializer.Deserialize<List<Recipe>>(inBetween2, serializeOptions);
         bool continueCode = true;
