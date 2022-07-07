@@ -128,7 +128,7 @@ public static class Program
     }
 
     public static Recipe getRecipeInput(List< Category> categories, Dictionary<string, Guid> categoriesMap,bool isEditing) {
-        var title = AnsiConsole.Ask<string>(isEditing? "what's the recipe new title?": "What's the recipe title?");
+        var title = AnsiConsole.Ask<string>(isEditing? "what's the recipe new title?": "What's the recipe title?").Trim();
         List<string> ingredients = new();
         var ingredient = "";
         ingredient = AnsiConsole.Ask<string>("What's the recipe ingredients?\n[green]enter them one bye one seperated by enter (type END to get to the next step)[/]").Trim();
@@ -163,6 +163,21 @@ public static class Program
         Recipe recipe = new Recipe(title, ingredients, instructions, chosenCategoriesFinal);
         return recipe; 
 
+    }
+
+    public static Category getCategoryInput(Dictionary<string, Guid> categoriesMap,bool isEditing)
+    {
+        var name = AnsiConsole.Ask<string>(isEditing ? "What's the category new name?" : "What's the category name?").ToLower().Trim();
+        try
+        {
+            while (categoriesMap.ContainsKey(null))
+            {
+                name = AnsiConsole.Ask<string>("this category name already exists, Enter neew one please. ").ToLower().Trim();
+            }
+        }
+        catch (Exception e) { }
+        Category category = new Category(name);
+        return category;
     }
 
     public static async Task Main(string[] args)
@@ -298,21 +313,12 @@ public static class Program
                             switch (backChoice)
                             {
                                 case "":
-                                    var name = AnsiConsole.Ask<string>("What's the category name?").ToLower().Trim();
-                                    try
-                                    {
-                                        while (categoriesMap.ContainsKey(null))
-                                        {
-                                            name = AnsiConsole.Ask<string>("this category name already exists, Enter neew one please. ").ToLower().Trim();
-                                        }
-                                    }
-                                    catch (Exception e) { }
-                                    Category to_add = new Category(name);
-                                    var temp = JsonSerializer.Serialize(to_add);
+                                    Category toAdd = getCategoryInput(categoriesMap, false);
+                                    var temp = JsonSerializer.Serialize(toAdd);
                                     var res3 = await httpClient.PostAsync("https://localhost:7131/categories", new StringContent(temp, Encoding.UTF8, "application/json"));
-                                    categories.Add(to_add);
-                                    categoriesMap[name] = to_add.ID;
-                                    categoriesNamesMap[to_add.ID] = to_add.Name;
+                                    categories.Add(toAdd);
+                                    categoriesMap[toAdd.Name] = toAdd.ID;
+                                    categoriesNamesMap[toAdd.ID] = toAdd.Name;
                                     backChoice = "Back";
                                     break;
                                 case "Back":
@@ -334,18 +340,10 @@ public static class Program
                                         index = int.Parse(AnsiConsole.Ask<string>("choose an index to edit"));
                                     }
                                     categoriesMap.Remove(categories[index].Name);
-                                    var name = AnsiConsole.Ask<string>("What's the category new name?").ToLower().Trim();
-                                    try
-                                    {
-                                        while (categoriesMap.ContainsKey(name))
-                                        {
-                                            name = AnsiConsole.Ask<string>("this category name already exists, Enter neew one please. ").ToLower().Trim();
-                                        }
-                                    }
-                                    catch (Exception e) { }
-                                    var temp = JsonSerializer.Serialize(new Category(name));
+                                   Category toEdit=getCategoryInput(categoriesMap, true);
+                                    var temp = JsonSerializer.Serialize(toEdit);
                                     var res3 = await httpClient.PutAsync("https://localhost:7131/categories/" + categories[index].ID, new StringContent(temp, Encoding.UTF8, "application/json"));
-                                    categories[index].Name = name;
+                                    categories[index].Name = toEdit.Name;
                                     categoriesMap[categories[index].Name] = categories[index].ID;
                                     categoriesNamesMap[categories[index].ID] = categories[index].Name;
                                     backChoice = "Back";
